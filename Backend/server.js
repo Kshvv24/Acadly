@@ -28,6 +28,10 @@ app.get("/home", (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, "home.html"));
 });
 
+app.get("/chatbot", (req, res) => {
+  res.sendFile(path.join(FRONTEND_PATH, "chatbot.html"));
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "Server running 🚀" });
