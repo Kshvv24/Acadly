@@ -18,6 +18,10 @@ app.use(express.static(FRONTEND_PATH));
 
 // -------------------- ROUTES -------------------- //
 
+// Auth routes
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, "index.html"));
