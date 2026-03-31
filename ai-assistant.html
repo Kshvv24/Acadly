@@ -13,6 +13,23 @@
       } catch {}
     })();
   </script>
+  <script>
+    // Access gate: only allow after login/sign-up
+    (function () {
+      try {
+        const authed =
+          localStorage.getItem("acadly-authenticated") === "true" ||
+          !!localStorage.getItem("acadly-user");
+
+        if (!authed) {
+          const next = "../ai-assistant.html"; // resolved from Frontend/Login.html
+          window.location.replace(
+            "Frontend/Login.html?next=" + encodeURIComponent(next)
+          );
+        }
+      } catch {}
+    })();
+  </script>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
