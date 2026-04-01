@@ -1,4 +1,4 @@
-# Acadly# Acadly 🎓
+# Acadly 🎓
 
 ### Modern Academic Management System
 
