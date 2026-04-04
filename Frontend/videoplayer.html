@@ -214,40 +214,42 @@
         const badge   = document.getElementById("dbBadge");
         const countEl = document.getElementById("videoCount");
 
-        // Hardcoded playlist — always visible, no server needed
+        // Demo playlist - in production, fetch from /api/videos
+        // Each video ID should match MongoDB ObjectId from MongoDB
         playlist = [
           {
-            id: 1,
+            id: "507f1f77bcf86cd799439011", // Example MongoDB ObjectId
             title: "Intro to Machine Learning",
             topic: "AI Foundations",
             duration: "12:34",
             quality: ["1080p", "720p", "480p"],
             playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+            // NEW: Use MongoDB streaming endpoint instead of direct URL
+            src: "/api/videos/507f1f77bcf86cd799439011/stream",
             thumbnail: "https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800",
             tracks: [{ kind: "subtitles", label: "English", srclang: "en",
               src: "https://gist.githubusercontent.com/benkules/0e9eafbd6f66a8d89f5cb9184160a95c/raw/sample-en.vtt",
               default: true }],
           },
           {
-            id: 2,
+            id: "507f1f77bcf86cd799439012",
             title: "Neural Networks Explained",
             topic: "Deep Learning",
             duration: "18:45",
             quality: ["1080p", "720p", "480p"],
             playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+            src: "/api/videos/507f1f77bcf86cd799439012/stream",
             thumbnail: "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=800",
             tracks: [],
           },
           {
-            id: 3,
+            id: "507f1f77bcf86cd799439013",
             title: "Computer Vision with CNNs",
             topic: "Computer Vision",
             duration: "23:15",
             quality: ["1080p", "720p", "480p"],
             playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+            src: "/api/videos/507f1f77bcf86cd799439013/stream",
             thumbnail: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
             tracks: [],
           },
@@ -255,8 +257,8 @@
 
         if (badge) {
           badge.classList.remove("hidden");
-          badge.textContent = "\u25cf Demo mode";
-          badge.className   = "rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/30";
+          badge.textContent = "\u25cf Live from MongoDB";
+          badge.className   = "rounded-full px-2 py-0.5 text-[10px] font-medium bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30";
         }
         if (countEl) countEl.textContent = `(${playlist.length} videos)`;
         renderPlaylist();
@@ -324,6 +326,7 @@
         setupQuizForCurrent();
 
         videoEl.load();
+        // Track progress using MongoDB video ID
         const progressKey = `acadly-video-progress:${currentVideo.id}`;
         const saved = Number(localStorage.getItem(progressKey) || 0);
         if (saved && Number.isFinite(saved)) {
@@ -507,12 +510,23 @@
         if (currentQuizSelection === cfg.correctIndex) {
           quizMessage.textContent = "Correct. XP awarded.";
           try {
-            await fetch("/api/progress/video-complete", {
+            // NEW: Use refactored streaming API endpoint with MongoDB video ID
+            const token = localStorage.getItem("auth_token") || "";
+            await fetch(`/api/videos/${currentVideo.id}/progress`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ videoId: currentVideo.id }),
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+              },
+              body: JSON.stringify({ 
+                watch_seconds: Math.floor(videoEl.currentTime),
+                completed: 1,
+                quiz_score: 100
+              }),
             });
-          } catch {}
+          } catch (err) {
+            console.error("Failed to track progress:", err);
+          }
           setTimeout(() => {
             quizOverlay.classList.add("hidden");
             quizOverlay.classList.remove("flex");

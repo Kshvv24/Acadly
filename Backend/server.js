@@ -19,6 +19,30 @@ const FRONTEND_PATH = path.join(__dirname, "../Frontend");
 // Serve static files
 app.use(express.static(FRONTEND_PATH));
 
+// -------------------- DATABASE INITIALIZATION -------------------- //
+// Initialize MySQL connection (existing)
+try {
+  const mysqlPool = require("../DataBase/db_config");
+  console.log("✅ MySQL pool initialized");
+} catch (err) {
+  console.warn("⚠️  MySQL connection failed:", err.message);
+}
+
+// Initialize MongoDB connection for video streaming
+(async () => {
+  try {
+    const { connectMongoDB, initializeCollections } = require("../DataBase/db_config_mongo");
+    const { initializeCollections: mongoInit } = require("../DataBase/schema-mongo");
+    
+    await connectMongoDB();
+    await mongoInit();
+    console.log("✅ MongoDB initialized for video streaming");
+  } catch (err) {
+    console.warn("⚠️  MongoDB connection failed:", err.message);
+    console.warn("⚠️  Video streaming will not be available until MongoDB is configured");
+  }
+})();
+
 // -------------------- ROUTES -------------------- //
 
 // Auth routes (registration, login, token management)
@@ -85,81 +109,6 @@ try {
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "Server running 🚀" });
-});
-
-
-
-
-// -------------------- DEMO DATA -------------------- //
-
-let attendance = {}; // { username: Set(dates) }
-let users = [];
-
-// -------------------- API -------------------- //
-
-// Register user
-app.post("/api/register", (req, res) => {
-  const { name, email } = req.body;
-
-  if (!name || !email) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
-
-  users.push({ name, email });
-
-  res.json({ message: "User registered successfully" });
-});
-
-// Mark attendance
-app.post("/api/attendance", (req, res) => {
-  const { username } = req.body;
-
-  if (!username) {
-    return res.status(400).json({ error: "Username required" });
-  }
-
-  const today = new Date().toISOString().split("T")[0];
-
-  if (!attendance[username]) {
-    attendance[username] = new Set();
-  }
-
-  attendance[username].add(today);
-
-  res.json({
-    message: "Attendance marked",
-    date: today
-  });
-});
-
-// Get streak
-app.get("/api/streak/:username", (req, res) => {
-  const { username } = req.params;
-
-  if (!attendance[username]) {
-    return res.json({ username, streak: 0 });
-  }
-
-  const dates = Array.from(attendance[username]).sort().reverse();
-
-  let streak = 0;
-  let currentDate = new Date();
-
-  for (let i = 0; i < dates.length; i++) {
-    const d = new Date(dates[i]);
-
-    const diff = Math.floor(
-      (currentDate - d) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diff === streak) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-
-  res.json({ username, streak });
 });
 
 // -------------------- 404 HANDLER -------------------- //
