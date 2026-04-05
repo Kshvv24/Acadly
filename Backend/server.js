@@ -13,8 +13,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Absolute path to Frontend folder
-const FRONTEND_PATH = path.join(__dirname, "../Frontend");
+// Absolute path to new Frontend 2.0 folder
+const FRONTEND_PATH = path.join(__dirname, "../../Frontend 2.0");
 
 // Serve static files
 app.use(express.static(FRONTEND_PATH));
@@ -79,12 +79,12 @@ try {
 
 // Home route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(FRONTEND_PATH, "index.html"));
+  res.sendFile(path.join(FRONTEND_PATH, "Homepage.html"));
 });
 
 // Optional home alias
 app.get("/home", (req, res) => {
-  res.sendFile(path.join(FRONTEND_PATH, "home.html"));
+  res.sendFile(path.join(FRONTEND_PATH, "Homepage.html"));
 });
 
 app.get("/chatbot", (req, res) => {
