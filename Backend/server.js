@@ -33,7 +33,7 @@ try {
   try {
     const { connectMongoDB, initializeCollections } = require("../DataBase/db_config_mongo");
     const { initializeCollections: mongoInit } = require("../DataBase/schema-mongo");
-    
+
     await connectMongoDB();
     await mongoInit();
     console.log("✅ MongoDB initialized for video streaming");

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,12 +26,28 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(147, 51, 234, 0.4); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(147, 51, 234, 0.8); }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(147, 51, 234, 0.4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(147, 51, 234, 0.8);
+        }
 
         .glass {
             background: rgba(15, 23, 42, 0.6);
@@ -39,7 +56,10 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .card-hover:hover {
             transform: translateY(-8px);
             box-shadow: 0 10px 30px -5px rgba(147, 51, 234, 0.4);
@@ -54,17 +74,36 @@
             height: 100%;
             transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease-in-out;
         }
-        .view-a-active { transform: translateX(0); opacity: 1; }
-        .view-a-hidden { transform: translateX(-100%); opacity: 0; pointer-events: none; }
-        .view-b-active { transform: translateX(0); opacity: 1; }
-        .view-b-hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+
+        .view-a-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .view-a-hidden {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .view-b-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .view-b-hidden {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
 
         /* Path Nodes */
         .path-line {
             position: absolute;
             top: 50%;
             left: 4rem;
-            width: 212rem; /* Enough length to connect all items */
+            width: 212rem;
+            /* Enough length to connect all items */
             height: 4px;
             background: linear-gradient(90deg, #22d3ee 35%, #334155 35%);
             transform: translateY(-5px);
@@ -77,7 +116,7 @@
             z-index: 10;
             transition: all 0.3s;
         }
-        
+
         /* Node states */
         .node-completed {
             background: #0f172a;
@@ -85,18 +124,21 @@
             color: #22d3ee;
             box-shadow: 0 0 15px rgba(34, 211, 238, 0.6);
         }
+
         .node-active {
             background: #0f172a;
             border-color: #9333ea;
             color: #9333ea;
             animation: pulse-purple 2s infinite;
         }
+
         .node-locked {
             background: #1e293b;
             border-color: #334155;
             color: #64748b;
             cursor: not-allowed;
         }
+
         .node-ai {
             background: #0f172a;
             border-color: #f59e0b;
@@ -104,6 +146,7 @@
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
             animation: float 3s ease-in-out infinite;
         }
+
         .node-boss {
             background: #0f172a;
             border-color: #22d3ee;
@@ -113,72 +156,189 @@
         }
 
         @keyframes pulse-purple {
-            0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.6); }
-            70% { box-shadow: 0 0 0 15px rgba(147, 51, 234, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(147, 51, 234, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(147, 51, 234, 0);
+            }
         }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         /* Modal / Side Panel */
         .content-panel {
             transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
         }
-        .panel-hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .panel-visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
-        
+
+        .panel-hidden {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .panel-visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         /* Quiz option hover */
-        .quiz-opt { transition: all 0.2s; }
-        .quiz-opt:hover:not(.selected) { background: rgba(147, 51, 234, 0.1); border-color: rgba(147, 51, 234, 0.5); }
-        .quiz-opt.selected { background: #9333ea; border-color: #9333ea; color: white; }
+        .quiz-opt {
+            transition: all 0.2s;
+        }
+
+        .quiz-opt:hover:not(.selected) {
+            background: rgba(147, 51, 234, 0.1);
+            border-color: rgba(147, 51, 234, 0.5);
+        }
+
+        .quiz-opt.selected {
+            background: #9333ea;
+            border-color: #9333ea;
+            color: white;
+        }
 
         /* Stagger Nodes */
-        .node-btn:nth-of-type(odd) { margin-top: -6rem; }
-        .node-btn:nth-of-type(even) { margin-top: 6rem; }
-        #node-10 { margin-top: 0 !important; }
+        .node-btn:nth-of-type(odd) {
+            margin-top: -6rem;
+        }
+
+        .node-btn:nth-of-type(even) {
+            margin-top: 6rem;
+        }
+
+        #node-10 {
+            margin-top: 0 !important;
+        }
 
         /* Light Theme Overrides */
-        body.light-theme { background-color: #f8fafc; color: #0f172a; }
-        body.light-theme .glass { background: rgba(255, 255, 255, 0.7); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        body.light-theme .text-slate-200, body.light-theme .text-slate-300, body.light-theme .text-slate-400, body.light-theme p.text-slate-400 { color: #475569 !important; }
-        body.light-theme h1, body.light-theme h2, body.light-theme h3, body.light-theme .text-white { color: #0f172a !important; }
-        body.light-theme .node-locked { background: #e2e8f0; border-color: #cbd5e1; color: #64748b; }
-        body.light-theme .node-completed, body.light-theme .node-active, body.light-theme .node-ai, body.light-theme .node-boss { background: #ffffff; }
-        body.light-theme #contentPanelOverlay { background: rgba(255,255,255,0.7); }
-        body.light-theme #contentPanel { box-shadow: 0 -10px 40px rgba(0,0,0,0.1); background: rgba(255,255,255,0.95); }
-        body.light-theme .bg-slate-900\/60, body.light-theme .bg-slate-900\/50, body.light-theme .bg-slate-900\/40, body.light-theme .bg-slate-800\/50 { background: #f1f5f9; border-color: #cbd5e1 !important; }
-        body.light-theme .bg-slate-900, body.light-theme .bg-slate-800\/80, body.light-theme .bg-slate-800\/40, body.light-theme .bg-slate-800 { background: #ffffff; border-color: #e2e8f0 !important; }
-        body.light-theme .border-white\/10, body.light-theme .border-white\/5 { border-color: rgba(0,0,0,0.1) !important; }
-        
-        body.light-theme #gradStop2 { stop-color: #cbd5e1; }
-        body.light-theme .bg-black\/60 { background: #e2e8f0; }
-        body.light-theme .prose-invert { color: #334155; }
+        body.light-theme {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        body.light-theme .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-theme .text-slate-200,
+        body.light-theme .text-slate-300,
+        body.light-theme .text-slate-400,
+        body.light-theme p.text-slate-400 {
+            color: #475569 !important;
+        }
+
+        body.light-theme h1,
+        body.light-theme h2,
+        body.light-theme h3,
+        body.light-theme .text-white {
+            color: #0f172a !important;
+        }
+
+        body.light-theme .node-locked {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+        }
+
+        body.light-theme .node-completed,
+        body.light-theme .node-active,
+        body.light-theme .node-ai,
+        body.light-theme .node-boss {
+            background: #ffffff;
+        }
+
+        body.light-theme #contentPanelOverlay {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        body.light-theme #contentPanel {
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        body.light-theme .bg-slate-900\/60,
+        body.light-theme .bg-slate-900\/50,
+        body.light-theme .bg-slate-900\/40,
+        body.light-theme .bg-slate-800\/50 {
+            background: #f1f5f9;
+            border-color: #cbd5e1 !important;
+        }
+
+        body.light-theme .bg-slate-900,
+        body.light-theme .bg-slate-800\/80,
+        body.light-theme .bg-slate-800\/40,
+        body.light-theme .bg-slate-800 {
+            background: #ffffff;
+            border-color: #e2e8f0 !important;
+        }
+
+        body.light-theme .border-white\/10,
+        body.light-theme .border-white\/5 {
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        body.light-theme #gradStop2 {
+            stop-color: #cbd5e1;
+        }
+
+        body.light-theme .bg-black\/60 {
+            background: #e2e8f0;
+        }
+
+        body.light-theme .prose-invert {
+            color: #334155;
+        }
     </style>
 </head>
+
 <body class="bg-slate-950 text-slate-200 overflow-hidden h-screen w-screen relative">
 
 
     <!-- Background Accents -->
-    <div class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-cyan-900/20 blur-[120px] pointer-events-none z-0"></div>
+    <div
+        class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[50%] rounded-full bg-cyan-900/20 blur-[120px] pointer-events-none z-0">
+    </div>
 
     <!-- VIEW A: THE MODULE GRID -->
     <main id="viewA" class="view-window view-a-active flex flex-col pt-16 px-8 md:px-20 z-10 overflow-auto">
         <header class="mb-12 max-w-6xl mx-auto w-full flex justify-between items-start md:items-center">
             <div>
-                <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400 inline-block mb-4">
+                <h1
+                    class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400 inline-block mb-4">
                     Explore Modules
                 </h1>
                 <p class="text-slate-400 text-lg">Select a discipline to begin your journey.</p>
             </div>
             <div class="flex items-center gap-4">
-                <a href="dashboard_v2.html" class="flex items-center gap-2 px-4 py-2 rounded-full glass text-slate-300 hover:text-white hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all font-medium text-sm">
+                <a href="dashboard_v2.html"
+                    class="flex items-center gap-2 px-4 py-2 rounded-full glass text-slate-300 hover:text-white hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all font-medium text-sm">
                     <i class="fa-solid fa-house"></i> Dashboard
                 </a>
                 <!-- Theme Toggle for View A -->
-                <button onclick="toggleTheme()" class="theme-btn w-12 h-12 shrink-0 rounded-full glass flex items-center justify-center text-xl text-yellow-400 hover:scale-110 transition-transform shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+                <button onclick="toggleTheme()"
+                    class="theme-btn w-12 h-12 shrink-0 rounded-full glass flex items-center justify-center text-xl text-yellow-400 hover:scale-110 transition-transform shadow-[0_0_15px_rgba(250,204,21,0.2)]">
                     <i class="fa-solid fa-sun theme-icon"></i>
                 </button>
             </div>
@@ -186,68 +346,86 @@
 
         <section class="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
             <!-- Module Card 1 -->
-            <button onclick="navigateToViewB('System Design')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-emerald-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('System Design')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-emerald-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/SysyemD.png" alt="System Design" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">System Design</h3>
-                    <p class="text-sm text-slate-400">Scalable architectures, distributed systems, and microservices patterns.</p>
+                    <p class="text-sm text-slate-400">Scalable architectures, distributed systems, and microservices
+                        patterns.</p>
                 </div>
             </button>
-            
+
             <!-- Module Card 2 -->
-            <button onclick="navigateToViewB('Data Structures & Algorithms')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-purple-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('Data Structures & Algorithms')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-purple-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/DSA.png" alt="DSA" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">DSA</h3>
-                    <p class="text-sm text-slate-400">Master data structures, algorithms, graph theory, and dynamic programming.</p>
+                    <p class="text-sm text-slate-400">Master data structures, algorithms, graph theory, and dynamic
+                        programming.</p>
                 </div>
             </button>
-            
+
             <!-- Module Card 3 -->
-            <button onclick="navigateToViewB('Python Programming')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-amber-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('Python Programming')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-amber-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/python.png" alt="Python Programming" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">Python Programming</h3>
-                    <p class="text-sm text-slate-400">From basic syntax to advanced decorators and standard libraries.</p>
+                    <p class="text-sm text-slate-400">From basic syntax to advanced decorators and standard libraries.
+                    </p>
                 </div>
             </button>
-            
+
             <!-- Module Card 4 -->
-            <button onclick="navigateToViewB('University Physics')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-cyan-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('University Physics')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-cyan-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/physics.png" alt="University Physics" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">University Physics</h3>
-                    <p class="text-sm text-slate-400">Classical mechanics, electromagnetism, and modern physics principles.</p>
+                    <p class="text-sm text-slate-400">Classical mechanics, electromagnetism, and modern physics
+                        principles.</p>
                 </div>
             </button>
 
             <!-- Module Card 5 -->
-            <button onclick="navigateToViewB('Maths 1 (Calculus)')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-rose-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('Maths 1 (Calculus)')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-rose-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/maths1.png" alt="Maths 1" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">Maths 1 (Calculus)</h3>
-                    <p class="text-sm text-slate-400">Limits, derivatives, integrals, and their applications in engineering.</p>
+                    <p class="text-sm text-slate-400">Limits, derivatives, integrals, and their applications in
+                        engineering.</p>
                 </div>
             </button>
 
             <!-- Module Card 6 -->
-            <button onclick="navigateToViewB('Maths 2 (Linear Algebra)')" class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-indigo-500">
-                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+            <button onclick="navigateToViewB('Maths 2 (Linear Algebra)')"
+                class="text-left w-full h-48 glass rounded-2xl p-6 card-hover flex flex-col justify-between group outline-none focus:ring-2 focus:ring-indigo-500">
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
                     <img src="modules images/maths2.png" alt="Maths 2" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold text-white mb-2">Maths 2 (Linear Algebra)</h3>
-                    <p class="text-sm text-slate-400">Matrices, vector spaces, eigenvalues, and multi-variable calculus.</p>
+                    <p class="text-sm text-slate-400">Matrices, vector spaces, eigenvalues, and multi-variable calculus.
+                    </p>
                 </div>
             </button>
         </section>
@@ -258,7 +436,8 @@
         <!-- Top Nav -->
         <nav class="glass px-8 py-4 flex items-center justify-between sticky top-0 z-50">
             <div class="flex items-center gap-6">
-                <button onclick="navigateToViewA()" class="text-slate-400 hover:text-white flex items-center gap-2 transition-colors">
+                <button onclick="navigateToViewA()"
+                    class="text-slate-400 hover:text-white flex items-center gap-2 transition-colors">
                     <i class="fa-solid fa-arrow-left"></i> <span>Back to Modules</span>
                 </button>
                 <div class="h-6 w-px bg-slate-700"></div>
@@ -266,7 +445,8 @@
             </div>
             <div class="flex items-center gap-4">
                 <!-- Theme Toggle for View B -->
-                <button onclick="toggleTheme()" class="theme-btn w-10 h-10 shrink-0 rounded-full glass flex items-center justify-center text-lg text-yellow-400 hover:scale-110 transition-transform shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+                <button onclick="toggleTheme()"
+                    class="theme-btn w-10 h-10 shrink-0 rounded-full glass flex items-center justify-center text-lg text-yellow-400 hover:scale-110 transition-transform shadow-[0_0_15px_rgba(250,204,21,0.2)]">
                     <i class="fa-solid fa-sun theme-icon"></i>
                 </button>
                 <div class="text-sm text-slate-400 bg-slate-800/50 px-4 py-1.5 rounded-full border border-slate-700">
@@ -290,79 +470,114 @@
                 </svg>
 
                 <!-- Node 1 (Completed) -->
-                <button onclick="openPanel('standard', 1, 'Introduction & Concepts')" class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
+                <button onclick="openPanel('standard', 1, 'Introduction & Concepts')"
+                    class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
                     <i class="fa-solid fa-check"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">1. Intro</span>
+                    <span
+                        class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">1.
+                        Intro</span>
                 </button>
-                
+
                 <!-- Node 2 (Completed) -->
-                <button onclick="openPanel('standard', 2, 'Core Methodologies')" class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
+                <button onclick="openPanel('standard', 2, 'Core Methodologies')"
+                    class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
                     <i class="fa-solid fa-check"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">2. Methods</span>
+                    <span
+                        class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">2.
+                        Methods</span>
                 </button>
 
                 <!-- Node 3 (Completed) -->
-                <button onclick="openPanel('standard', 3, 'Practical Application I')" class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
+                <button onclick="openPanel('standard', 3, 'Practical Application I')"
+                    class="node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group">
                     <i class="fa-solid fa-check"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">3. Practice I</span>
+                    <span
+                        class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-300 group-hover:text-white">3.
+                        Practice I</span>
                 </button>
 
                 <!-- Node 4 (Active Pulsing) -->
-                <button onclick="openPanel('standard', 4, 'Advanced Theories')" class="node-btn node-active w-20 h-20 rounded-full border-2 flex items-center justify-center text-2xl outline-none shrink-0 group">
+                <button onclick="openPanel('standard', 4, 'Advanced Theories')"
+                    class="node-btn node-active w-20 h-20 rounded-full border-2 flex items-center justify-center text-2xl outline-none shrink-0 group">
                     <i class="fa-solid fa-play ml-1"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-200">4. Theories</span>
+                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-200">4.
+                        Theories</span>
                 </button>
 
                 <!-- Node 5 (AI Checkpoint) -->
-                <button onclick="openPanel('ai', 5, 'AI Checkpoint')" class="node-btn node-ai w-16 h-16 rounded-xl border-2 flex items-center justify-center text-2xl outline-none shrink-0 group rotate-45 hover:scale-110 transition-transform">
+                <button onclick="openPanel('ai', 5, 'AI Checkpoint')"
+                    class="node-btn node-ai w-16 h-16 rounded-xl border-2 flex items-center justify-center text-2xl outline-none shrink-0 group rotate-45 hover:scale-110 transition-transform">
                     <i class="fa-solid fa-robot -rotate-45"></i>
-                    <span class="absolute -bottom-10 -left-6 whitespace-nowrap text-sm font-bold text-amber-400 tracking-wider -rotate-45">CHECKPOINT</span>
+                    <span
+                        class="absolute -bottom-10 -left-6 whitespace-nowrap text-sm font-bold text-amber-400 tracking-wider -rotate-45">CHECKPOINT</span>
                 </button>
 
                 <!-- Node 6 (Locked initially) -->
-                <button id="node-6" onclick="openPanel('standard', 6, 'Practical Application II')" class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group" disabled>
+                <button id="node-6" onclick="openPanel('standard', 6, 'Practical Application II')"
+                    class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group"
+                    disabled>
                     <i class="fa-solid fa-lock"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">6. Practice II</span>
+                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">6. Practice
+                        II</span>
                 </button>
 
                 <!-- Node 7 (Locked) -->
-                <button id="node-7" class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group" disabled>
+                <button id="node-7"
+                    class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group"
+                    disabled>
                     <i class="fa-solid fa-lock"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">7. Case Study</span>
+                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">7. Case
+                        Study</span>
                 </button>
 
                 <!-- Node 8 (Locked) -->
-                <button id="node-8" class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group" disabled>
+                <button id="node-8"
+                    class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group"
+                    disabled>
                     <i class="fa-solid fa-lock"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">8. Deep Dive</span>
+                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">8. Deep
+                        Dive</span>
                 </button>
 
                 <!-- Node 9 (Locked) -->
-                <button id="node-9" class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group" disabled>
+                <button id="node-9"
+                    class="node-btn node-locked w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group"
+                    disabled>
                     <i class="fa-solid fa-lock"></i>
-                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">9. Synthesis</span>
+                    <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-500">9.
+                        Synthesis</span>
                 </button>
 
                 <!-- Node 10 (Boss Fight) -->
-                <button id="node-10" onclick="openPanel('boss', 10, 'Final Mock Test')" class="node-btn node-locked w-24 h-24 rounded-full border-4 flex items-center justify-center text-4xl outline-none shrink-0 group mx-8" disabled>
+                <button id="node-10" onclick="openPanel('boss', 10, 'Final Mock Test')"
+                    class="node-btn node-locked w-24 h-24 rounded-full border-4 flex items-center justify-center text-4xl outline-none shrink-0 group mx-8"
+                    disabled>
                     <i class="fa-solid fa-crown text-slate-600" id="boss-icon"></i>
-                    <span class="absolute -bottom-10 whitespace-nowrap text-lg font-bold text-slate-600 uppercase tracking-widest" id="boss-text">Final Test</span>
+                    <span
+                        class="absolute -bottom-10 whitespace-nowrap text-lg font-bold text-slate-600 uppercase tracking-widest"
+                        id="boss-text">Final Test</span>
                 </button>
             </div>
         </div>
     </main>
 
     <!-- CONTENT PANEL (Modal/Sliding Drawer) -->
-    <div id="contentPanelOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 panel-hidden" onclick="closePanel(event)">
-        <div id="contentPanel" class="absolute bottom-0 left-0 w-full h-[85vh] md:h-[90vh] glass rounded-t-3xl border-b-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col pt-2" onclick="event.stopPropagation()">
-            
+    <div id="contentPanelOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 panel-hidden"
+        onclick="closePanel(event)">
+        <div id="contentPanel"
+            class="absolute bottom-0 left-0 w-full h-[85vh] md:h-[90vh] glass rounded-t-3xl border-b-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col pt-2"
+            onclick="event.stopPropagation()">
+
             <!-- Drag Handle / Header -->
             <div class="w-full flex justify-between items-center px-8 py-4 border-b border-white/10 shrink-0">
                 <div class="flex items-center gap-4">
-                    <div id="panelNodeBadge" class="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center font-bold">4</div>
+                    <div id="panelNodeBadge"
+                        class="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center font-bold">
+                        4</div>
                     <h3 id="panelTitle" class="text-2xl font-semibold text-white">Advanced Theories</h3>
                 </div>
-                <button onclick="closePanel()" class="text-slate-400 hover:text-white p-2 text-2xl outline-none transition-colors">
+                <button onclick="closePanel()"
+                    class="text-slate-400 hover:text-white p-2 text-2xl outline-none transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -384,11 +599,11 @@
 
         function navigateToViewB(courseName) {
             courseHeaderTitle.textContent = courseName;
-            
+
             // Slide A out, B in
             viewA.classList.remove('view-a-active');
             viewA.classList.add('view-a-hidden');
-            
+
             viewB.classList.remove('view-b-hidden');
             viewB.classList.add('view-b-active');
 
@@ -400,7 +615,7 @@
             // Slide B out, A in
             viewB.classList.remove('view-b-active');
             viewB.classList.add('view-b-hidden');
-            
+
             viewA.classList.remove('view-a-hidden');
             viewA.classList.add('view-a-active');
         }
@@ -412,7 +627,7 @@
         const panelTitle = document.getElementById('panelTitle');
         const panelNodeBadge = document.getElementById('panelNodeBadge');
         const panelBody = document.getElementById('panelBody');
-        
+
         // Track Node 6 lock state natively
         let isNode6Unlocked = false;
 
@@ -420,20 +635,20 @@
             // Setup header
             panelNodeBadge.textContent = nodeNumber;
             panelTitle.textContent = title;
-            
+
             // Set badge styling based on type
-            panelNodeBadge.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 ' + 
+            panelNodeBadge.className = 'w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 ' +
                 (type === 'standard' ? 'bg-slate-800 border-purple-500 text-purple-400' :
-                 type === 'ai' ? 'bg-slate-800 border-amber-500 text-amber-400 rounded-xl rotate-45 [&>span]:-rotate-45' : 
-                 'bg-slate-800 border-cyan-400 text-cyan-400');
-            
+                    type === 'ai' ? 'bg-slate-800 border-amber-500 text-amber-400 rounded-xl rotate-45 [&>span]:-rotate-45' :
+                        'bg-slate-800 border-cyan-400 text-cyan-400');
+
             if (type === 'ai') {
                 panelNodeBadge.innerHTML = '<span>' + nodeNumber + '</span>';
             }
 
             // Clear previous body
             panelBody.innerHTML = '';
-            
+
             // Render specific content
             if (type === 'standard') {
                 renderStandardContent();
@@ -543,7 +758,7 @@
         function submitAIAnswer() {
             const input = document.getElementById('aiInput');
             if (input.value.trim().length === 0) return;
-            
+
             // Append User Message visually
             const chatWindow = document.getElementById('chatWindow');
             const userHtml = `
@@ -556,10 +771,10 @@
                     </div>
                 </div>
             `;
-            
+
             const aiSuccessId = document.getElementById('aiSuccess'); // find it to insert before it
             aiSuccessId.insertAdjacentHTML('beforebegin', userHtml);
-            
+
             input.value = '';
             input.disabled = true;
 
@@ -568,7 +783,7 @@
                 const aiSuccess = document.getElementById('aiSuccess');
                 aiSuccess.classList.remove('hidden');
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-                
+
                 unlockNode6();
             }, 800);
         }
@@ -576,7 +791,7 @@
         function unlockNode6() {
             if (isNode6Unlocked) return;
             isNode6Unlocked = true;
-            
+
             // Update UI for Path
             const node6 = document.getElementById('node-6');
             node6.disabled = false;
@@ -585,10 +800,10 @@
                 <i class="fa-solid fa-play ml-1"></i>
                 <span class="absolute -bottom-8 whitespace-nowrap text-sm font-medium text-slate-200">6. Practice II</span>
             `;
-            
+
             // Revert Node 4 to completed
             const node4 = document.querySelector('.node-active.node-btn:not(#node-6)');
-            if(node4) {
+            if (node4) {
                 node4.className = "node-btn node-completed w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl outline-none shrink-0 group";
                 node4.innerHTML = `
                     <i class="fa-solid fa-check"></i>
@@ -599,7 +814,7 @@
             // Expand gradient line to connect Node 6
             document.getElementById('gradStop1').setAttribute('offset', '55%');
             document.getElementById('gradStop2').setAttribute('offset', '55%');
-            
+
             // For demo purposes, automatically unlock Boss Mock Test as well to show its UI
             const node10 = document.getElementById('node-10');
             node10.disabled = false;
@@ -669,7 +884,7 @@
         function selectQuizOption(choice) {
             selectedQuizOption = choice;
             const options = ['A', 'B', 'C', 'D'];
-            
+
             options.forEach(opt => {
                 const el = document.getElementById('opt' + opt);
                 const badge = el.querySelector('.opt-badge');
@@ -692,7 +907,7 @@
             submitBtn.className = "mt-12 w-full py-5 rounded-xl font-bold text-lg transition-all duration-300 bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_0_20px_rgba(34,211,238,0.5)] transform hover:-translate-y-1";
             submitBtn.onclick = finishTest;
         }
-        
+
         function finishTest() {
             panelBody.innerHTML = `
                 <div class="h-full flex flex-col items-center justify-center pb-20 fade-in">
@@ -715,10 +930,10 @@
             const body = document.body;
             body.classList.toggle('light-theme');
             const isLight = body.classList.contains('light-theme');
-            
+
             const icons = document.querySelectorAll('.theme-icon');
             const btns = document.querySelectorAll('.theme-btn');
-            
+
             if (isLight) {
                 icons.forEach(icon => icon.className = 'fa-solid fa-moon text-indigo-600 theme-icon');
                 btns.forEach(btn => {
@@ -738,7 +953,7 @@
             const nodes = document.querySelectorAll('.node-btn');
             const path = document.getElementById('curvePath');
             if (nodes.length === 0 || !path) return;
-            
+
             // Re-calc curve logic
             let d = "";
             nodes.forEach((node, i) => {
@@ -746,14 +961,14 @@
                 // Notice: offsetTop and offsetLeft are fully relative to .min-w-max which is the identical parent for the SVG
                 const x = node.offsetLeft + node.offsetWidth / 2;
                 const y = node.offsetTop + node.offsetHeight / 2;
-                
+
                 if (i === 0) {
                     d += `M ${x} ${y} `;
                 } else {
-                    const prev = nodes[i-1];
+                    const prev = nodes[i - 1];
                     const prevX = prev.offsetLeft + prev.offsetWidth / 2;
                     const prevY = prev.offsetTop + prev.offsetHeight / 2;
-                    
+
                     // Smooth curve using cubic bezier control points via midpoints
                     const midX = (prevX + x) / 2;
                     d += `C ${midX} ${prevY}, ${midX} ${y}, ${x} ${y} `;
@@ -765,9 +980,10 @@
         // Initialize SVG curves
         window.addEventListener('load', () => { setTimeout(drawCurvyLine, 100); });
         window.addEventListener('resize', drawCurvyLine);
-        
+
         // Redraw on transition end to ensure proper calculations during animation
         document.getElementById('viewB').addEventListener('transitionend', drawCurvyLine);
     </script>
 </body>
+
 </html>
