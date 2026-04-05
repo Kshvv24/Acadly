@@ -86,11 +86,11 @@ router.get('/dashboard/:user_id', verifyToken, async (req, res) => {
       WHERE user_id = ?
     `, [user_id]);
 
-    // Get recent activity (last 5 videos watched)
+    // Recent plays: video_id is MongoDB ObjectId string (titles from GET /api/videos)
     const [recentActivity] = await db.query(`
-      SELECT uvp.last_watched, v.title, uvp.completed, uvp.watch_seconds, v.duration_seconds
+      SELECT uvp.last_watched, uvp.video_id AS mongo_video_id,
+             uvp.completed, uvp.watch_seconds
       FROM user_video_progress uvp
-      JOIN videos v ON uvp.video_id = v.id
       WHERE uvp.user_id = ?
       ORDER BY uvp.last_watched DESC
       LIMIT 5

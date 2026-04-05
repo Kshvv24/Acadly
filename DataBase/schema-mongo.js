@@ -1,7 +1,7 @@
 // DataBase/schema-mongo.js
 // MongoDB schemas for Acadly video streaming system using GridFS
 
-const mongoose = require("mongoose");
+const mongoose = require("./resolve-mongoose");
 
 // ============================================================
 // VIDEO METADATA SCHEMA
@@ -87,6 +87,30 @@ const videoMetadataSchema = new mongoose.Schema(
     thumbnail: {
       type: String,
       description: "Thumbnail URL (base64 or external link)",
+    },
+
+    // Optional WebVTT / track URLs for the HTML5 player
+    subtitleTracks: [
+      {
+        kind: { type: String, default: "subtitles" },
+        label: String,
+        srclang: String,
+        src: { type: String, required: true },
+        default: { type: Boolean, default: false },
+      },
+    ],
+
+    // Inline study notes (shown in player drawer)
+    notes: {
+      type: [String],
+      default: [],
+    },
+
+    // Single end-of-video quiz (optional)
+    quiz: {
+      question: { type: String },
+      options: [{ type: String }],
+      correctIndex: { type: Number, min: 0 },
     },
 
     thumbnailGridFS: {

@@ -4,8 +4,8 @@
  * Run once to initialise the MySQL database:
  *   node Backend/setup-db.js
  *
- * Executes:  DataBase/schema.sql  (creates all tables)
- *        +   DataBase/seed_videos.sql  (inserts 8 AI learning videos)
+ * Executes:  DataBase/schema.sql  (users, profiles, video progress, attendance)
+ * Video catalog lives in MongoDB — see Backend/upload-videos.js
  */
 
 require("dotenv").config({ path: require("path").join(__dirname, "../.env") });
@@ -33,10 +33,7 @@ connection.connect((err) => {
   }
   console.log("\u2705  Connected to MySQL server");
 
-  const files = [
-    path.join(DB_ROOT, "schema.sql"),
-    path.join(DB_ROOT, "seed_videos.sql"),
-  ];
+  const files = [path.join(DB_ROOT, "schema.sql")];
 
   let completed = 0;
 

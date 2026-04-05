@@ -210,59 +210,55 @@
         return `${m}:${s}`;
       }
 
-      function loadPlaylist() {
+      function getNotesForVideo(v) {
+        if (!v) return [];
+        if (Array.isArray(v.notes) && v.notes.length) return v.notes;
+        return window.ACADLY_VIDEO_ENHANCEMENTS?.notes?.[v.id] || [];
+      }
+
+      function getQuizForVideo(v) {
+        if (!v) return null;
+        if (v.quiz && v.quiz.question && Array.isArray(v.quiz.options)) return v.quiz;
+        return window.ACADLY_VIDEO_ENHANCEMENTS?.quizzes?.[v.id] || null;
+      }
+
+      async function loadPlaylist() {
         const badge   = document.getElementById("dbBadge");
         const countEl = document.getElementById("videoCount");
+        const titleElHeader = document.getElementById("videoTitle");
 
-        // Demo playlist - in production, fetch from /api/videos
-        // Each video ID should match MongoDB ObjectId from MongoDB
-        playlist = [
-          {
-            id: "507f1f77bcf86cd799439011", // Example MongoDB ObjectId
-            title: "Intro to Machine Learning",
-            topic: "AI Foundations",
-            duration: "12:34",
-            quality: ["1080p", "720p", "480p"],
-            playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            // NEW: Use MongoDB streaming endpoint instead of direct URL
-            src: "/api/videos/507f1f77bcf86cd799439011/stream",
-            thumbnail: "https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800",
-            tracks: [{ kind: "subtitles", label: "English", srclang: "en",
-              src: "https://gist.githubusercontent.com/benkules/0e9eafbd6f66a8d89f5cb9184160a95c/raw/sample-en.vtt",
-              default: true }],
-          },
-          {
-            id: "507f1f77bcf86cd799439012",
-            title: "Neural Networks Explained",
-            topic: "Deep Learning",
-            duration: "18:45",
-            quality: ["1080p", "720p", "480p"],
-            playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            src: "/api/videos/507f1f77bcf86cd799439012/stream",
-            thumbnail: "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=800",
-            tracks: [],
-          },
-          {
-            id: "507f1f77bcf86cd799439013",
-            title: "Computer Vision with CNNs",
-            topic: "Computer Vision",
-            duration: "23:15",
-            quality: ["1080p", "720p", "480p"],
-            playbackSpeeds: [0.75, 1, 1.25, 1.5, 2],
-            src: "/api/videos/507f1f77bcf86cd799439013/stream",
-            thumbnail: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
-            tracks: [],
-          },
-        ];
+        playlist = [];
+        try {
+          const res = await fetch("/api/videos");
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || err.error || res.statusText);
+          }
+          playlist = await res.json();
+        } catch (e) {
+          console.error("Playlist load failed:", e);
+          if (titleElHeader) titleElHeader.textContent = "Could not load playlist";
+          if (badge) {
+            badge.classList.remove("hidden");
+            badge.textContent = "\u25cf MongoDB / API offline";
+            badge.className =
+              "rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-500/20 text-amber-200 ring-1 ring-amber-500/30";
+          }
+          if (countEl) countEl.textContent = "(0 videos)";
+          renderPlaylist();
+          return;
+        }
 
         if (badge) {
           badge.classList.remove("hidden");
           badge.textContent = "\u25cf Live from MongoDB";
-          badge.className   = "rounded-full px-2 py-0.5 text-[10px] font-medium bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30";
+          badge.className =
+            "rounded-full px-2 py-0.5 text-[10px] font-medium bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30";
         }
         if (countEl) countEl.textContent = `(${playlist.length} videos)`;
         renderPlaylist();
-        setVideoIndex(0);
+        if (playlist.length) setVideoIndex(0);
+        else if (titleElHeader) titleElHeader.textContent = "No videos yet — upload to MongoDB";
       }
 
       function renderPlaylist() {
@@ -437,7 +433,7 @@
 
       function setupNotesForCurrent() {
         if (!currentVideo) return;
-        const cfg = window.ACADLY_VIDEO_ENHANCEMENTS?.notes?.[currentVideo.id] || [];
+        const cfg = getNotesForVideo(currentVideo);
         notesTitle.textContent = currentVideo.title;
         notesList.innerHTML = "";
         const key = `acadly-video-notes:${currentVideo.id}`;
@@ -473,7 +469,7 @@
         quizMessage.textContent = "";
         quizOptions.innerHTML = "";
         if (!currentVideo) return;
-        const cfg = window.ACADLY_VIDEO_ENHANCEMENTS?.quizzes?.[currentVideo.id];
+        const cfg = getQuizForVideo(currentVideo);
         if (!cfg) return;
         quizQuestion.textContent = cfg.question;
         cfg.options.forEach((opt, idx) => {
@@ -505,23 +501,22 @@
           quizMessage.textContent = "Pick an option first.";
           return;
         }
-        const cfg = window.ACADLY_VIDEO_ENHANCEMENTS?.quizzes?.[currentVideo.id];
+        const cfg = getQuizForVideo(currentVideo);
         if (!cfg) return;
         if (currentQuizSelection === cfg.correctIndex) {
           quizMessage.textContent = "Correct. XP awarded.";
           try {
-            // NEW: Use refactored streaming API endpoint with MongoDB video ID
             const token = localStorage.getItem("auth_token") || "";
-            await fetch(`/api/videos/${currentVideo.id}/progress`, {
+            await fetch("/api/progress/video-complete", {
               method: "POST",
-              headers: { 
+              headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
               },
-              body: JSON.stringify({ 
-                watch_seconds: Math.floor(videoEl.currentTime),
-                completed: 1,
-                quiz_score: 100
+              body: JSON.stringify({
+                videoId: currentVideo.id,
+                watchSeconds: Math.floor(videoEl.currentTime),
+                quizScore: 100,
               }),
             });
           } catch (err) {
@@ -537,7 +532,7 @@
         }
       });
       videoEl.addEventListener("ended", () => {
-        if (currentVideo && window.ACADLY_VIDEO_ENHANCEMENTS?.quizzes?.[currentVideo.id]) showQuizOverlay();
+        if (currentVideo && getQuizForVideo(currentVideo)) showQuizOverlay();
         else if (currentIndex < playlist.length - 1) setVideoIndex(currentIndex + 1, true);
       });
 

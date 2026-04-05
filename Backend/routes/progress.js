@@ -34,9 +34,10 @@ router.post("/video-complete", async (req, res) => {
     return res.status(400).json({ error: "videoId is required." });
   }
 
+  const mongoVideoId = String(videoId);
+
   if (pool) {
     try {
-      // Upsert progress row
       await pool.query(
         `INSERT INTO user_video_progress
            (user_id, video_id, watch_seconds, completed, xp_awarded, quiz_score)
@@ -47,10 +48,9 @@ router.post("/video-complete", async (req, res) => {
            xp_awarded    = IF(xp_awarded = 0, VALUES(xp_awarded), xp_awarded),
            quiz_score    = IF(VALUES(quiz_score) > 0, VALUES(quiz_score), quiz_score),
            last_watched  = CURRENT_TIMESTAMP`,
-        [userId, videoId, watchSeconds, XP_PER_VIDEO, quizScore]
+        [userId, mongoVideoId, watchSeconds, XP_PER_VIDEO, quizScore]
       );
 
-      // Update aggregate XP in user_profiles (creates row if missing)
       await pool.query(
         `INSERT INTO user_profiles (user_id, xp_total, last_active)
          VALUES (?, ?, CURDATE())
@@ -61,7 +61,7 @@ router.post("/video-complete", async (req, res) => {
              ?, 0
            ),
            last_active = CURDATE()`,
-        [userId, XP_PER_VIDEO, userId, videoId, XP_PER_VIDEO, XP_PER_VIDEO]
+        [userId, XP_PER_VIDEO, userId, mongoVideoId, XP_PER_VIDEO, XP_PER_VIDEO]
       );
 
       // Mark attendance for today

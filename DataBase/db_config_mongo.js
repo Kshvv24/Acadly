@@ -1,7 +1,7 @@
 // DataBase/db_config_mongo.js
 // MongoDB connection pool with GridFS support for Acadly video streaming
 
-const mongoose = require("mongoose");
+const mongoose = require("./resolve-mongoose");
 
 // Get MongoDB URI from environment or use local default
 const MONGO_URI =
