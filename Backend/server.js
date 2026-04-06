@@ -142,6 +142,11 @@ app.get("/upload", (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, "upload.html"));
 });
 
+// PDF library page
+app.get("/library", (req, res) => {
+  res.sendFile(path.join(FRONTEND_PATH, "library.html"));
+});
+
 // -------------------- ADMIN ROUTES (owner-only) -------------------- //
 // Protected by x-admin-key header — see DataBase/admin_middleware.js
 try {
